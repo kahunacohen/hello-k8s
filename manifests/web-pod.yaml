@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: web-pod
+spec:
+  containers:
+    - name: web
+      image: kahunacohen/hello-kube:latest
+      ports:
+      - containerPort: 80
