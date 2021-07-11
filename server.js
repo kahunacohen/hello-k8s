@@ -3,7 +3,14 @@ const app = express();
 
 
 app.get("/", (req, res) => {
-  res.send("Hello world");
+  res.send(`<h1>Kubernetes Expressjs Example</h2>
+  <h2>Non-Secret Configuration Example</h2>
+  <p>This uses ConfigMaps as env vars.</p>
+  <ul>
+    <li>my_non_secret: "${process.env.my_non_secret}"</li>
+    <li>my_other_non_secret: "${process.env.my_other_non_secret}"</li>
+  </ul>
+  `);
 });
 
 

@@ -1,0 +1,7 @@
+kind: ConfigMap 
+apiVersion: v1 
+metadata:
+  name: web-configmap 
+data:
+  my_non_secret: abc
+  my_other_non_secret: def 
