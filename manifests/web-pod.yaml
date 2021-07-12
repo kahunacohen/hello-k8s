@@ -6,8 +6,5 @@ spec:
   containers:
     - name: web
       image: kahunacohen/hello-kube:latest
-      envFrom:
-        - configMapRef:
-            name: web-configmap
       ports:
       - containerPort: 3000
