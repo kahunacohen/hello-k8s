@@ -3,5 +3,5 @@ apiVersion: v1
 metadata:
   name: web-configmap 
 data:
-  my_non_secret: abc
-  my_other_non_secret: def 
+  MY_NON_SECRET: abc
+  MY_OTHER_NON_SECRET: def 
