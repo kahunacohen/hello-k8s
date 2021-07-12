@@ -1,7 +1,11 @@
-kind: ConfigMap 
-apiVersion: v1 
-metadata:
-  name: web-configmap 
+apiVersion: v1
 data:
-  MY_NON_SECRET: abc
-  MY_OTHER_NON_SECRET: def 
+  MY_NON_SECRET: foo
+  MY_OTHER_NON_SECRET: bar
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2021-07-12T08:55:12Z"
+  name: web-configmap
+  namespace: default
+  resourceVersion: "29421"
+  uid: fc24156a-dd99-4522-9135-bb693443a314
