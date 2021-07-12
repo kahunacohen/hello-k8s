@@ -23,3 +23,11 @@ spec:
         ports:
         - containerPort: 3000
           protocol: TCP
+        volumeMounts:
+          - name: secrets
+            mountPath: "/etc/secrets"
+            readOnly: true
+      volumes:
+        - name: secrets
+          secret:
+            secretName: web-secret-password

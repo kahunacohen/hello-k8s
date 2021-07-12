@@ -16,6 +16,9 @@ open_minikube_url :
 # Only first time, loads from .env file.
 create_configmap :
 	kubectl create configmap web-configmap --from-env-file=./.env
+create_secret :
+	kubectl create secret generic web-secret-$(key) --from-file=./$(key).txt
+
 set_image :
 	kubectl set image deployment/web-deployment web=kahunacohen/hello-kube:$(tag)
 

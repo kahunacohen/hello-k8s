@@ -1,6 +1,7 @@
 const process = require("process");
 const express = require("express");
 const app = express();
+const fs = require("fs");
 
 
 app.get("/", (req, res) => {
@@ -10,6 +11,13 @@ app.get("/", (req, res) => {
   <ul>
     <li>MY_NON_SECRET: "${process.env.MY_NON_SECRET}"</li>
     <li>MY_OTHER_NON_SECRET: "${process.env.MY_OTHER_NON_SECRET}"</li>
+  </ul>
+  <h2>Secret Config Example</h2>
+  <p>This uses actual secrets that are stored at /etc/secrets. They are created using
+  the kubectl command line program, BUT we don't create a manifest so they are not
+  in source control. The deployment mounts a volume with the base64 encoded value at /etc/secrets/{key}.txt</p>
+  <ul>
+    <li>password: ${Buffer.from(fs.readFileSync("/etc/secrets/password.txt", {encoding: "utf-8"}), "base64")}</li>
   </ul>
   `);
 });
