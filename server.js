@@ -19,6 +19,9 @@ app.get("/", (req, res) => {
   <ul>
     <li>password: ${Buffer.from(fs.readFileSync("/etc/secrets/password.txt", {encoding: "utf-8"}), "base64")}</li>
   </ul>
+  <h2>Cronjobs</h2>
+  <p>You can set cronjobs which run in their own pod. After the cron job is over, the pod is destroyed.</p>
+  <p>To see cron logs: </p>
   `);
 });
 
