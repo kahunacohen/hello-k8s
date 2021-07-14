@@ -30,4 +30,4 @@ spec:
       volumes:
         - name: secrets
           secret:
-            secretName: web-secret-password
+            secretName: web-secrets
