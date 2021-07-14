@@ -20,6 +20,7 @@ create_secrets :
 set_image :
 	kubectl set image deployment/web-deployment web=kahunacohen/hello-kube:$(tag)
 
+# tag=x.x.x make deploy
 deploy : build_image push_image set_image
 	kubectl get pods
 
