@@ -21,7 +21,7 @@ spec:
         - configMapRef:
             name: web-configmap
         ports:
-        - containerPort: 3000
+        - containerPort: 3000 # The port the containers are running on internally.
           protocol: TCP
         volumeMounts:
           - name: secrets
