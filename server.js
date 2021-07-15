@@ -5,11 +5,16 @@ const fs = require("fs");
 
 function getSecret(key) {
   // No error handling or caching.
-  return Buffer.from(fs.readFileSync(`/etc/secrets/${key}`, {encoding: "utf-8"}), "base64")
+  try {
+    return Buffer.from(fs.readFileSync(`/etc/secrets/${key}`, {encoding: "utf-8"}), "base64");
+  } catch(e) {
+    console.error(`Problem getting sercret file: /etc/secrets/${key}`);
+    return null;
+  }
 }
 
 app.get("/", (req, res) => {
-  res.send(`<h1>Kubernetes Expressjs Example 0.8</h2>
+  res.send(`<h1>Kubernetes Expressjs Example</h2>
   <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
