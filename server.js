@@ -14,7 +14,7 @@ function getSecret(key) {
 }
 
 app.get("/", (req, res) => {
-  res.send(`<h1>Kubernetes Expressjs Example</h2>
+  res.send(`<h1>Kubernetes Expressjs Example Testing, 1, 2, 3</h2>
   <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
