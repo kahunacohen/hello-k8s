@@ -8,7 +8,7 @@ function getSecret(key) {
   try {
     return Buffer.from(fs.readFileSync(`/etc/secrets/${key}`, {encoding: "utf-8"}), "base64");
   } catch(e) {
-    console.error(`Problem getting sercret file: /etc/secrets/${key}`);
+    console.error(`Problem getting sercret file: "${key}"`);
     return null;
   }
 }
