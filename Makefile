@@ -22,6 +22,14 @@ kb_create_secrets :
 kb_set_image :
 	kubectl set image deployment/web-deployment web=kahunacohen/hello-kube:$(tag)
 
+kb_create :
+	kubectl create -f manifests/web-deployment.yaml
+	kubectl create -f manifests/web-service.yaml
+kb_delete :
+	kubectl delete deployments web-deployment
+	kubectl delete services web-service
+	kubectl delete jobs --all
+
 # tag=x.x.x make deploy
 deploy : build_image push_image set_image
 	kubectl get pods

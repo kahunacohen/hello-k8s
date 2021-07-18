@@ -1,8 +1,0 @@
-apiVersion: v1
-data:
-  MY_NON_SECRET: foo
-  MY_OTHER_NON_SECRET: bar
-kind: ConfigMap
-metadata:
-  name: web-configmap
-  namespace: default
