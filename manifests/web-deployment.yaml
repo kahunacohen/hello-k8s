@@ -7,7 +7,6 @@ spec:
   selector:
     matchLabels:
       app: web-pod
-      service: web-service
   template:
     metadata:
       labels:
@@ -16,18 +15,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: kahunacohen/hello-kube:latest
-        envFrom:
-        - configMapRef:
-            name: web-configmap
+        image: kahunacohen/hello-k8s
         ports:
-        - containerPort: 3000 # The port the containers are running on internally.
+        - containerPort: 3000
           protocol: TCP
-        volumeMounts:
-          - name: secrets
-            mountPath: "/etc/secrets"
-            readOnly: true
-      volumes:
-        - name: secrets
-          secret:
-            secretName: web-secrets
