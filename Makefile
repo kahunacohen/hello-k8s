@@ -1,10 +1,14 @@
 # Docker
-dk_build :
-	docker build -t kahunacohen/hello-kube:$(tag) .	&& docker build -t kahunacohen/helo-kube:latest .
-dk_push :
-	docker push kahunacohen/hello-kube:$(tag) && docker push kahunacohen/hello-kube:latest
+db_build_latest :
+	docker build -t kahunacohen/hello-k8s:latest .
+dk_build : db_build_latest
+	docker build -t kahunacohen/hello-k8s:$(tag) .
+dk_push_latest :
+	docker push kahunacohen/hello-k8s:latest
+dk_push : dk_push_latest
+	docker push kahunacohen/hello-k8s:$(tag)
 dk_run :
-	docker rm hello-kube && docker run -p 3000:3000 --name hello-kube hello-kube
+	docker rm hello-k8s && docker run -p 3000:3000 --name hello-k8s hello-k8s
 
 # minikube
 mk_start :
@@ -20,13 +24,11 @@ kb_create_configmap :
 kb_create_secrets :
 	kubectl create secret generic web-secrets --from-file=./secrets
 kb_set_image :
-	kubectl set image deployment/web-deployment web=kahunacohen/hello-kube:$(tag)
-
+	kubectl set image deployment/web-deployment web=kahunacohen/hello-k8s:$(tag)
 kb_create :
-	kubectl create -f manifests/web-deployment.yaml
-	kubectl create -f manifests/web-service.yaml
+	kubectl create -f manifests/web-configmap.yaml && kubectl create -f manifests/web-deployment.yaml && kubectl create -f manifests/web-service.yaml
 kb_delete :
-	kubectl delete deployments web-deployment || kubectl delete services web-service || kubectl delete jobs --all
+	kubectl delete deployments web-deployment || kubectl delete services web-service || kubectl delete configmaps web-configmap
 
 # tag=x.x.x make deploy
 deploy : build_image push_image set_image
