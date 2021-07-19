@@ -1,7 +1,8 @@
 # Use explicit version of node, not LTS
 from node:14.17.3
 
-# Create a non-priviliged user to run the process (server.js)
+# Create a non-priviliged user to run the process (server.js).
+# The code should be owned by root, not world-writable, but run as the non-root user.
 RUN useradd -ms /bin/bash appuser && mkdir /code && chown -R appuser /code
 
 # Dependencies are less likely to change than app code
