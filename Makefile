@@ -26,7 +26,7 @@ kb_set_image :
 kb_create :
 	kubectl create -f manifests/web-configmap.yaml || kubectl create -f manifests/web-deployment.yaml || kubectl create -f manifests/web-service.yaml
 kb_delete :
-	kubectl delete deployments web-deployment || kubectl delete services web-service || kubectl delete configmaps web-configmap
+	kubectl delete deployments web-deployment || kubectl delete services web-service || kubectl delete configmaps web-configmap || kubectl jobs delete --all
 
 # tag=x.x.x make deploy
 deploy : build_image push_image kb_set_image
