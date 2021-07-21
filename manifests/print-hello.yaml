@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: print-hello
+spec:
+  schedule: "*/5 * * * *"
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: print-hello
+            image: kahunacohen/hello-kube:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/sh
+            - -c
+            - date; echo Hello from the Kubernetes cluster
+          restartPolicy: OnFailure

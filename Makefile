@@ -1,8 +1,6 @@
 # Docker
-db_build_latest :
-	docker build -t kahunacohen/hello-k8s:latest .
-dk_build : db_build_latest
-	docker build -t kahunacohen/hello-k8s:$(tag) .
+dk_build :
+	docker build -t kahunacohen/hello-k8s:$(tag) -t kahunacohen/hello-k8s:latest .
 dk_push_latest :
 	docker push kahunacohen/hello-k8s:latest
 dk_push : dk_push_latest
@@ -26,12 +24,12 @@ kb_create_secrets :
 kb_set_image :
 	kubectl set image deployment/web-deployment web=kahunacohen/hello-k8s:$(tag)
 kb_create :
-	kubectl create -f manifests/web-configmap.yaml && kubectl create -f manifests/web-deployment.yaml && kubectl create -f manifests/web-service.yaml
+	kubectl create -f manifests/web-configmap.yaml || kubectl create -f manifests/web-deployment.yaml || kubectl create -f manifests/web-service.yaml
 kb_delete :
 	kubectl delete deployments web-deployment || kubectl delete services web-service || kubectl delete configmaps web-configmap
 
 # tag=x.x.x make deploy
-deploy : build_image push_image set_image
+deploy : build_image push_image kb_set_image
 	kubectl get pods
 
 
