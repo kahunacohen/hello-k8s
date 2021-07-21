@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: web
-        image: kahunacohen/hello-k8s:latest
+        image: kahunacohen/hellok8s
+        imagePullPolicy: IfNotPresent
         envFrom:
           - configMapRef:
               name: web-configmap

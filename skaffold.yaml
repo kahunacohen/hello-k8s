@@ -1,0 +1,16 @@
+apiVersion: skaffold/v2beta19
+kind: Config
+metadata:
+  name: hello-k8s
+build:
+  artifacts:
+  - image: kahunacohen/hellok8s
+    docker:
+      dockerfile: Dockerfile
+deploy:
+  kubectl:
+    manifests:
+    - manifests/web-configmap.yaml
+    - manifests/web-service.yaml
+    - manifests/web-deployment.yaml
+    - manifests/print-hello.yaml
