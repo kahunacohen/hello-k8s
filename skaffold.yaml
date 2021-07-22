@@ -4,7 +4,7 @@ metadata:
   name: hello-k8s
 build:
   artifacts:
-  - image: kahunacohen/hellok8s
+  - image: kahunacohen/hello-k8s
     docker:
       dockerfile: Dockerfile
 deploy:
