@@ -1,12 +1,14 @@
 # Docker
-dk_build :
-	docker build -t kahunacohen/hello-k8s:$(tag) -t kahunacohen/hello-k8s:latest .
+dk_build_latest :
+	docker build -t kahunacohen/hello-k8s:latest .
+dk_build : dk_build_latest
+	docker build -t kahunacohen/hello-k8s:$(tag)
 dk_push_latest :
 	docker push kahunacohen/hello-k8s:latest
 dk_push : dk_push_latest
 	docker push kahunacohen/hello-k8s:$(tag)
 dk_run :
-	docker rm hello-k8s && docker run -p 3000:3000 --name hello-k8s hello-k8s
+	docker run -d -p 3000:3000 kahunacohen/hello-k8s:latest
 
 # minikube
 mk_start :
