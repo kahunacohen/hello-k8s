@@ -11,6 +11,8 @@ dk_run :
 	docker run -d -p 3000:3000 kahunacohen/hello-k8s:latest
 
 # minikube
+mk_image_ls :
+	(eval $(minikube docker-env); docker image ls)
 mk_start :
 	minikube start
 mk_open :

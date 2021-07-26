@@ -4,13 +4,14 @@ metadata:
   name: hello-k8s
 build:
   artifacts:
-  - image: kahunacohen/hello-k8s
+  - image: hello-k8s
     docker:
       dockerfile: Dockerfile
+  local:
+    push: true
 deploy:
   kubectl:
     manifests:
     - manifests/web-configmap.yaml
     - manifests/web-service.yaml
     - manifests/web-deployment.yaml
-    - manifests/print-hello.yaml
