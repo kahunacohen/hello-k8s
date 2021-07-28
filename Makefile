@@ -1,14 +1,14 @@
 # Docker
-dk_build_latest :
-	docker build -t kahunacohen/hello-k8s:latest .
-dk_build : dk_build_latest
-	docker build -t kahunacohen/hello-k8s:$(tag)
-dk_push_latest :
-	docker push kahunacohen/hello-k8s:latest
-dk_push : dk_push_latest
-	docker push kahunacohen/hello-k8s:$(tag)
+dk_build :
+	docker build -t $(NS)/hello-k8s .
+dk_build_tag :
+	docker build -t $(NS)/hello-k8s:$(TAG)
+dk_push :
+	docker push $(NS)/hello-k8s
+dk_push_tag :
+	docker push $(NS)/hello-k8s:$(TAG)
 dk_run :
-	docker run -d -p 3000:3000 kahunacohen/hello-k8s:latest
+	docker run -d -p 3000:3000 $(NS)/hello-k8s
 
 # minikube
 mk_image_ls :
