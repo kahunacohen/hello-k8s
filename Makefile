@@ -2,7 +2,7 @@
 dk_build :
 	docker build -t $(NS)/hello-k8s .
 dk_build_tag :
-	docker build -t $(NS)/hello-k8s:$(TAG)
+	docker build -t $(NS)/hello-k8s:$(TAG) .
 dk_push :
 	docker push $(NS)/hello-k8s
 dk_push_tag :

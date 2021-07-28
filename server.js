@@ -4,7 +4,7 @@ const app = express();
 
 
 app.get("/", (req, res) => {
-  res.send(`<h1>Kubernetes Expressjs w/ Skaffold Tool</h2>
+  res.send(`<h1>Kubernetes Expressjs</h2>
   <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
