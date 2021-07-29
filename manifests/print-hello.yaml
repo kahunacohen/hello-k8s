@@ -12,7 +12,7 @@ spec:
         spec:
           containers:
           - name: print-hello
-            image: kahunacohen/hello-kube:latest
+            image: kahunacohen/hello-k8s
             imagePullPolicy: IfNotPresent
             command:
             - /bin/sh

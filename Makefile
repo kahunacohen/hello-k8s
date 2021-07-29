@@ -13,6 +13,9 @@ dk_run :
 # minikube
 mk_image_ls :
 	(eval $(minikube docker-env); docker image ls)
+mk_image_delete :
+	(eval $(minikube docker-env); docker image rm $(ID) --force)
+
 mk_start :
 	minikube start
 mk_open :
