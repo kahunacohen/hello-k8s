@@ -4,8 +4,8 @@ const app = express();
 
 
 app.get("/", (req, res) => {
-  res.send(`<h1>Kubernetes Expressjs 0.0.1</h2>
-  <h2>Non-Secret Configuration Example x</h2>
+  res.send(`<h1>Kubernetes Expressjs Test</h2>
+  <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
     <li>MY_NON_SECRET: "${process.env.MY_NON_SECRET}"</li>
