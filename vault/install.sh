@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 
+
+
 # Install and configure vault in a minikube cluster on MacOS. A minikube cluster must be running.
 
 # Delete pods, blocking until they are all terminated.
@@ -60,8 +62,14 @@ pds=$(kubectl get pods | grep 'consul-' | awk  '{print $1}')
 for i in $pds; do  
   kubectl exec "$i" -- rm -rf '/consul/data/raft'
 done;
-sleep 10
+sleep 20
 echo initializing vault server and getting keys
 kubectl exec vault-0 -- vault operator init -key-shares=5 -key-threshold=5 -format=json > cluster-keys.json
+
+vault_pds=$(kubectl get pods | grep -E 'vault-\d+' | awk  '{print $1}')
+for p in $vault_pds; do  
+  echo unsealing $p
+  cat cluster-keys.json | jq '.unseal_keys_hex[]' | xargs -L1 -I'{}' kubectl exec $p -- vault operator unseal '{}' > /dev/null
+done;
 sleep 10
 kill -9 $PORT_FWD_PID
