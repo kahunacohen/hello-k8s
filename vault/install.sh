@@ -1,18 +1,14 @@
 #!/usr/bin/env bash
-set +e
+
 
 # Install and configure vault in a minikube cluster on MacOS. A minikube cluster must be running.
-
-get_num_pods() {
-  kubectl get pods -ojson | jq '.items|length'
-}
 
 # Delete pods, blocking until they are all terminated.
 kubectl delete all --all
 while :
   do
-    pds=$(get_num_pods)
-    echo "Waiting for pods to terminate: $pds"
+    pds=$(kubectl get pods -ojson | jq '.items|length')
+    echo "Waiting for pods to terminate"
     if [ "$pds" -eq "0" ]; then
       break
     fi
@@ -41,6 +37,8 @@ if ! helm history vault &> /dev/null; then
   helm install vault hashicorp/vault --values helm-vault-values.yaml
 fi
 echo vault installed
+
+
 while :
   do
     echo Waiting for pods to start...
@@ -51,20 +49,19 @@ while :
     sleep 1
   done
 
-echo remove consul/data
-kubectl get pods
-
-# Reset consul data:
-kubectl exec consul-consul-server-0 -- rm -rf '/consul/data/*'
-sleep 5
-
-kubectl port-forward vault-0 8200:8200 &
+kubectl port-forward --address=127.0.0.1 vault-0 8200:8200 &
 PORT_FWD_PID=$!
 echo port forwarding vault in background. Process id: $PORT_FWD_PID
+sleep 30
 
-echo vault server status:
-kubectl exec vault-0 -- vault status
-
+echo Resetting consul data.
+kubectl get pods | grep 'consul-' | awk  '{print $1}'
+pds=$(kubectl get pods | grep 'consul-' | awk  '{print $1}')
+for i in $pds; do  
+  kubectl exec "$i" -- rm -rf '/consul/data/raft'
+done;
+sleep 10
 echo initializing vault server and getting keys
 kubectl exec vault-0 -- vault operator init -key-shares=5 -key-threshold=5 -format=json > cluster-keys.json
-#kill $PORT_FWD_PID
+sleep 10
+kill -9 $PORT_FWD_PID
