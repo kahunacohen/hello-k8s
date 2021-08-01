@@ -16,6 +16,13 @@ spec:
       - name: web
         image: kahunacohen/hello-k8s
         imagePullPolicy: IfNotPresent
+        env:
+          - name: VAULT_ADDR
+            value: 'http://vault:8200'
+          - name: JWT_PATH
+            value: '/var/run/secrets/kubernetes.io/serviceaccount/token'
+          - name: SERVICE_PORT
+            value: '8080'
         envFrom:
           - configMapRef:
               name: web-configmap
