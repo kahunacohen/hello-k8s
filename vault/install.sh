@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 
-
 # Install and configure vault in a minikube cluster on MacOS. A minikube cluster must be running.
 
 # Delete pods, blocking until they are all terminated.
@@ -73,7 +72,6 @@ done;
 sleep 20
 
 root_token=$(cat cluster-keys.json | jq -r ".root_token")
-kubectl exec vault-0 -- sh -c "vault login $root_token; sleep 10; vault secrets enable -path=secret kv-v2; sleep 10; vault kv put secret/webapp/config foo='static-user' bar='static-password'"
-
-
+secret_script=$(cat ./secrets.sh | sed "s/\$1/$root_token/g")
+kubectl exec vault-0 -- sh -c "$secret_script"
 #kill -9 $PORT_FWD_PID
