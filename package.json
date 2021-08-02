@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
-    "node-vault": "^0.9.22"
+    "hashi-vault-js": "^0.4.5"
   }
 }
