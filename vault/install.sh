@@ -2,10 +2,10 @@
 
 
 
-
 # Install and configure vault in a minikube cluster on MacOS. A minikube cluster must be running.
 
 # Delete pods, blocking until they are all terminated.
+
 kubectl delete all --all
 while :
   do
@@ -40,10 +40,9 @@ if ! helm history vault &> /dev/null; then
 fi
 echo vault installed
 
-
+echo Waiting for consul and vault pods to start...
 while :
   do
-    echo Waiting for pods to start...
     if kubectl get pods -ojson | jq -e '[.items[] | .status.phase] | length == 6 and all(.=="Running")' > /dev/null; then
       echo all pods are running.
       break
@@ -54,7 +53,7 @@ while :
 kubectl port-forward --address=127.0.0.1 vault-0 8200:8200 &
 PORT_FWD_PID=$!
 echo port forwarding vault in background. Process id: $PORT_FWD_PID
-sleep 30
+sleep 10
 
 echo Resetting consul data.
 kubectl get pods | grep 'consul-' | awk  '{print $1}'
@@ -71,5 +70,10 @@ for p in $vault_pds; do
   echo unsealing $p
   cat cluster-keys.json | jq '.unseal_keys_hex[]' | xargs -L1 -I'{}' kubectl exec $p -- vault operator unseal '{}' > /dev/null
 done;
-sleep 10
-kill -9 $PORT_FWD_PID
+sleep 20
+
+root_token=$(cat cluster-keys.json | jq -r ".root_token")
+kubectl exec vault-0 -- sh -c "vault login $root_token; sleep 10; vault secrets enable -path=secret kv-v2; sleep 10; vault kv put secret/webapp/config foo='static-user' bar='static-password'"
+
+
+#kill -9 $PORT_FWD_PID
