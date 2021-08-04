@@ -71,7 +71,27 @@ for p in $vault_pds; do
 done;
 sleep 20
 
+
+kubectl create serviceaccount vault-auth
+sleep 10
+export VAULT_SA_NAME=$(kubectl get sa vault-auth \
+    --output jsonpath="{.secrets[*]['name']}")
+echo Get VAULT_SA_NAME
+sleep 10
+export SA_JWT_TOKEN=$(kubectl get secret $VAULT_SA_NAME \
+    --output 'go-template={{ .data.token }}' | base64 --decode)
+echo Get SA_JWT_TOKEN
+sleep 10
+export SA_CA_CRT=$(kubectl config view --raw --minify --flatten \
+    --output 'jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
+echo Get SA_CA_CRT
+sleep 10
+export K8S_HOST=$(kubectl config view --raw --minify --flatten \
+    --output 'jsonpath={.clusters[].cluster.server}')
+echo Get K8S_HOST
 root_token=$(cat cluster-keys.json | jq -r ".root_token")
-secret_script=$(cat ./secrets.sh | sed "s/\$1/$root_token/g")
+secret_script=$(cat ./secrets.sh | sed "s#\$1#$root_token#g" | sed "s#\$2#$SA_JWT_TOKEN#g" | sed "s#\$3#$SA_CA_CERT#g" | sed "s#\$4#$K8S_HOST#g")
+echo secret script:
+echo "$secret_script"
 kubectl exec vault-0 -- sh -c "$secret_script"
 #kill -9 $PORT_FWD_PID
