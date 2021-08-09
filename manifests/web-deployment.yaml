@@ -12,8 +12,7 @@ spec:
       labels:
         app: web-pod
     spec:
-      serviceAccountName: vault-auth
-      automountServiceAccountToken: true
+      serviceAccountName: vault
       containers:
       - name: web
         image: kahunacohen/hello-k8s
