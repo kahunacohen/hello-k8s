@@ -6,43 +6,47 @@ const axios = require('axios').default;
 
 
 function Vault() {
-  const baseUrl = `${process.env.VAULT_ADDR}/v1`;
-
+  const axiosInst = axios.create({baseURL: `${process.env.VAULT_ADDR}/v1`});
   const getHealth = async () => {
-    const resp = await axios.get(`${baseUrl}/sys/health?standbyok=true`);
+    const resp = await axisoInst.get(`/sys/health?standbyok=true`);
     return resp.data;
   }
   
   const getAPIToken = () => {
     return fs.readFileSync(process.env.JWT_PATH, {encoding: "utf-8"});
   }
-
-  const getVaultToken = async () => {
-    const resp = await axios.post(`${baseUrl}/auth/kubernetes/login`, {jwt: getAPIToken(), role: "webapp"});
+  const getVaultAuth = async () => {
+    const resp = await axiosInst.post("/auth/kubernetes/login", {jwt: getAPIToken(), role: "webapp"});
     return resp.data;
-    //curl --request POST --data '{"jwt": "eyJh", "role": "webapp"}' http://vault:8200/v1/auth/kubernetes/login
+  }
+  const getSecrets = async (vaultToken) => {
+    const resp = await axiosInst("/secret/data/webapp/config", {headers: {"X-Vault-Token": vaultToken}});
+    return resp.data.data.data;
   }
   return {
     getAPIToken,
     getHealth,
-    getVaultToken
+    getSecrets,
+    getVaultAuth
   }
 
 }
 
 const vault = Vault();
 app.get("/", async (req, res) => {
-  const health = await vault.getHealth();
-  console.log("health:");
-  console.log(health);
-  console.log("vault token:");
-  console.log(await vault.getVaultToken());
+  const vaultAuth = await vault.getVaultAuth();
+  const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
   res.send(`<h1>Kubernetes Expressjs Test settings</h2>
   <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
     <li>MY_NON_SECRET: "${process.env.MY_NON_SECRET}"</li>
     <li>MY_OTHER_NON_SECRET: "${process.env.MY_OTHER_NON_SECRET}"</li>
+  </ul>
+  <h2>Secrets</h2>
+  <ul>
+  <li>username: ${secrets.username}</li>
+  <li>password: ${secrets.password}</li>
   </ul>
   `);
 });
