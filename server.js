@@ -15,8 +15,8 @@ function Vault() {
   const getAPIToken = () => {
     return fs.readFileSync(process.env.JWT_PATH, {encoding: "utf-8"});
   }
-  const getVaultAuth = async () => {
-    const resp = await axiosInst.post("/auth/kubernetes/login", {jwt: getAPIToken(), role: "webapp"});
+  const getVaultAuth = async (role) => {
+    const resp = await axiosInst.post("/auth/kubernetes/login", {jwt: getAPIToken(), role});
     return resp.data;
   }
   const getSecrets = async (vaultToken) => {
@@ -29,14 +29,14 @@ function Vault() {
     getSecrets,
     getVaultAuth
   }
-
 }
 
 const vault = Vault();
 app.get("/", async (req, res) => {
-  const vaultAuth = await vault.getVaultAuth();
+  const vaultAuth = await vault.getVaultAuth("webapp");
   const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
-  res.send(`<h1>Kubernetes Expressjs Test settings</h2>
+  res.send(
+  `<h1>Kubernetes Expressjs Test settings</h2>
   <h2>Non-Secret Configuration Example</h2>
   <p>This uses ConfigMaps as env vars.</p>
   <ul>
@@ -45,8 +45,8 @@ app.get("/", async (req, res) => {
   </ul>
   <h2>Secrets</h2>
   <ul>
-  <li>username: ${secrets.username}</li>
-  <li>password: ${secrets.password}</li>
+    <li>username: ${secrets.username}</li>
+    <li>password: ${secrets.password}</li>
   </ul>
   `);
 });
