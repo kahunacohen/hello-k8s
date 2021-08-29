@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const axios = require('axios').default;
+const { Pool, Client } = require('pg')
 
 
 function Vault() {
@@ -33,6 +34,17 @@ function Vault() {
 
 const vault = Vault();
 app.get("/", async (req, res) => {
+  const pool = new Pool({
+    user: 'postgres',
+    host: 'mypostgres',
+    database: 'postgres',
+    password: 'postgresSuperUserPsw',
+    port: 5432,
+  });
+  pool.query('SELECT NOW()', (err, res) => {
+    console.log(res.rows)
+    pool.end()
+})
   const vaultAuth = await vault.getVaultAuth("webapp");
   const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
   res.send(
