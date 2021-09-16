@@ -12,4 +12,10 @@ build:
 deploy:
   kubectl:
     manifests:
-    - manifests/*.yaml
+    - manifests/web-configmap.yaml
+    - manifests/web-deployment.yaml
+    - manifests/web-service.yaml
+    - manifests/print-hello.yaml
+    - manifests/mypostgres-conf.yaml
+    - manifests/my-postgres-secret.yaml
+    - manifests/my-postgres.yaml

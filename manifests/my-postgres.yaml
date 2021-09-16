@@ -11,7 +11,7 @@ spec:
 
    database:
       size: 200Mi
-
+   customConfig: mypostgres-conf
    env:
       - name: POSTGRES_PASSWORD
         valueFrom:
