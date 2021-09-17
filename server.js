@@ -34,17 +34,17 @@ function Vault() {
 
 const vault = Vault();
 app.get("/", async (req, res) => {
-//   const pool = new Pool({
-//     user: 'postgres',
-//     host: 'mypostgres',
-//     database: 'postgres',
-//     password: 'postgresSuperUserPsw',
-//     port: 5432,
-//   });
-//   pool.query('SELECT NOW()', (err, res) => {
-//     console.log(res.rows)
-//     pool.end()
-// })
+  const pool = new Pool({
+    user: 'web',
+    host: 'mypostgres',
+    database: 'web',
+    password: 'akhd5',
+    port: 5432,
+  });
+  pool.query('SELECT NOW()', (err, res) => {
+    console.log(res.rows)
+    pool.end()
+})
   const vaultAuth = await vault.getVaultAuth("webapp");
   const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
   res.send(
