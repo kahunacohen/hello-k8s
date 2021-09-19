@@ -32,44 +32,71 @@ function Vault() {
   }
 }
 
-const vault = Vault();
-app.get("/", async (req, res) => {
-  const pool = new Pool({
+function getPool() {
+  return new Pool({
     user: 'web',
     host: 'mypostgres',
     database: 'web',
     password: 'akhd5',
     port: 5432,
   });
+}
+function createFilmsTable(pool) {
   pool.query(`
   CREATE TABLE IF NOT EXISTS films (
     title       varchar(40) NOT NULL,
     kind        varchar(10)
-);`, (err, queryRes) => {
-    console.log(queryRes.rows);
-});
-pool.query(`SELECT title, kind FROM "films";`, (_, queryRes) => {
-  console.log(queryRes.rows);
-  let trs = "<tr>";
-  for (const r of queryRes.rows) {
-    trs += `<td>${r.title}</td><td>${r.kind}</td>`;
+);`, (_err, _queryRes) => {
+
+  });
+}
+
+function getFilms(pool) {
+  return new Promise((resolve) => {
+    pool.query(`SELECT title, kind FROM "films";`, (_, queryRes) => {
+      resolve(queryRes.rows);
+    });
+  })
+}
+async function populateFilmsTable(pool) {
+  const films = await getFilms(pool);
+  if (films.length === 0) {
+    pool.query(`INSERT INTO "films"(title, kind)
+    VALUES('Superman', 'drama');`, (_, queryRes) => {
+      return queryRes.rows;
+    });
   }
-  trs += "</tr>";
-  const html = `
-    <table border=1>
-      <thead>
-        <th>Title</th>
-        <th>Kind</th>
-      </thead>
-      <tbody>
-        ${trs}
-      </tbody>
-    </table>
-    `;
-    console.log(html);
-    res.send(html);
-  pool.end();
-})
+}
+
+const vault = Vault();
+let pool = getPool();
+
+createFilmsTable(pool);
+app.get("/", async (req, res) => {
+  
+await populateFilmsTable(pool);
+const films = await getFilms(pool);
+pool.end();
+let trs = "<tr>";
+for (const film of films) {
+  trs += `<td>${film.title}</td><td>${film.kind}</td>`;
+}
+trs += "</tr>";
+const html = `
+  <table border=1>
+    <thead>
+      <th>Title</th>
+      <th>Kind</th>
+    </thead>
+    <tbody>
+      ${trs}
+    </tbody>
+  </table>
+  `;
+console.log(html);
+res.send(html);
+
+
 
   // const vaultAuth = await vault.getVaultAuth("webapp");
   // const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
