@@ -3,7 +3,27 @@ const express = require("express");
 const app = express();
 const fs = require("fs");
 const axios = require("axios").default;
-const { Pool} = require("pg");
+const {
+  createFilmsTable,
+  populateFilmsTable,
+  getFilms,
+  getPool,
+} = require("./film");
+const path = require('path');
+const mustache = require("mustache")
+
+app.engine('html', function (filePath, options, callback) {
+  fs.readFile(filePath, function (err, content) {
+    if (err)
+      return callback(err)
+    var rendered = mustache.render(content.toString(), options);
+    return callback(null, rendered)
+  });
+});
+
+// Setting mustachejs as view engine
+app.set('view engine', 'html');
+app.set('views', path.join(__dirname, 'views'));
 
 function Vault() {
   const axiosInst = axios.create({ baseURL: `${process.env.VAULT_ADDR}/v1` });
@@ -36,58 +56,27 @@ function Vault() {
   };
 }
 
-function getPool() {
-  return new Pool({
-    user: "web",
-    host: "mypostgres",
-    database: "web",
-    password: "akhd5",
-    port: 5432,
-  });
-}
-function createFilmsTable(pool) {
-  pool.query(
-    `
-  CREATE TABLE IF NOT EXISTS films (
-    title       varchar(40) NOT NULL,
-    kind        varchar(10)
-);`,
-    (_err, _queryRes) => {}
-  );
-}
-
-function getFilms(pool) {
-  return new Promise((resolve) => {
-    pool.query(`SELECT title, kind FROM "films";`, (err, queryRes) => {
-      resolve(queryRes.rows);
-    });
-  });
-}
-async function populateFilmsTable(pool) {
-  const films = await getFilms(pool);
-  if (films.length === 0) {
-    pool.query(
-      `INSERT INTO "films"(title, kind)
-    VALUES('Superman', 'drama');`,
-      (_, queryRes) => {
-        return queryRes.rows;
-      }
-    );
-  }
-}
-
 const vault = Vault();
 let pool = getPool();
 createFilmsTable(pool);
+
+app.get('/sample', (req, res) => {
+  res.render('sample.html', { data: 'Sample Data' });
+});
 app.get("/", async (req, res, next) => {
-  await populateFilmsTable(pool);
-  const films = await getFilms(pool);
-  let trs = "<tr>";
-  for (const film of films) {
-    trs += `<td>${film.title}</td><td>${film.kind}</td>`;
+  let films = await getFilms(pool);
+  if (films.length === 0) {
+    await populateFilmsTable(pool);
+    films = await getFilms();
   }
-  trs += "</tr>";
+
+  let trs = "";
+  for (const film of films) {
+    trs += `<tr><td>${film.title}</td><td>${film.kind}</td></tr>`;
+  }
+
   const html = `
+  <h2>Films</h2>
   <table border=1>
     <thead>
       <th>Title</th>
@@ -98,7 +87,6 @@ app.get("/", async (req, res, next) => {
     </tbody>
   </table>
   `;
-  // console.log(html);
   res.send(html);
   next();
 

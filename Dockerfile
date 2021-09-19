@@ -12,7 +12,7 @@ COPY package.json /code/
 WORKDIR /code
 RUN npm install
 
-COPY server.js /code/
+COPY . /code/
 
 # Run the main process as the less priviliged user.
 USER appuser
