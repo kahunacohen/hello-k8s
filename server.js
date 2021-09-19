@@ -41,26 +41,52 @@ app.get("/", async (req, res) => {
     password: 'akhd5',
     port: 5432,
   });
-  pool.query('SELECT NOW()', (err, res) => {
-    console.log(res.rows)
-    pool.end()
+  pool.query(`
+  CREATE TABLE IF NOT EXISTS films (
+    title       varchar(40) NOT NULL,
+    kind        varchar(10)
+);`, (err, queryRes) => {
+    console.log(queryRes.rows);
+});
+pool.query(`SELECT title, kind FROM "films";`, (_, queryRes) => {
+  console.log(queryRes.rows);
+  let trs = "<tr>";
+  for (const r of queryRes.rows) {
+    trs += `<td>${r.title}</td><td>${r.kind}</td>`;
+  }
+  trs += "</tr>";
+  const html = `
+    <table border=1>
+      <thead>
+        <th>Title</th>
+        <th>Kind</th>
+      </thead>
+      <tbody>
+        ${trs}
+      </tbody>
+    </table>
+    `;
+    console.log(html);
+    res.send(html);
+  pool.end();
 })
-  const vaultAuth = await vault.getVaultAuth("webapp");
-  const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
-  res.send(
-  `<h1>Kubernetes Expressjs Test settings</h2>
-  <h2>Non-Secret Configuration Example</h2>
-  <p>This uses ConfigMaps as env vars.</p>
-  <ul>
-    <li>MY_NON_SECRET: "${process.env.MY_NON_SECRET}"</li>
-    <li>MY_OTHER_NON_SECRET: "${process.env.MY_OTHER_NON_SECRET}"</li>
-  </ul>
-  <h2>Secrets</h2>
-  <ul>
-    <li>username: ${secrets.username}</li>
-    <li>password: ${secrets.password}</li>
-  </ul>
-  `);
+
+  // const vaultAuth = await vault.getVaultAuth("webapp");
+  // const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
+  // res.send(
+  // `<h1>Kubernetes Expressjs Test settings</h2>
+  // <h2>Non-Secret Configuration Example</h2>
+  // <p>This uses ConfigMaps as env vars.</p>
+  // <ul>
+  //   <li>MY_NON_SECRET: "${process.env.MY_NON_SECRET}"</li>
+  //   <li>MY_OTHER_NON_SECRET: "${process.env.MY_OTHER_NON_SECRET}"</li>
+  // </ul>
+  // <h2>Secrets</h2>
+  // <ul>
+  //   <li>username: ${secrets.username}</li>
+  //   <li>password: ${secrets.password}</li>
+  // </ul>
+  // `);
 });
 
 
