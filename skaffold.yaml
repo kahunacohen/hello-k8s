@@ -16,6 +16,6 @@ deploy:
     - manifests/web-deployment.yaml
     - manifests/web-service.yaml
     - manifests/print-hello.yaml
-    - manifests/mypostgres-conf.yaml
-    - manifests/my-postgres-secret.yaml
-    - manifests/my-postgres.yaml
+    - manifests/postgres-conf.yaml
+    - manifests/postgres-secret.yaml
+    - manifests/postgres.yaml

@@ -24,6 +24,12 @@ createFilmsTable(pool);
 // config endpoint showing configs, secrets etc.
 app.get("/config", async (req, res) => {
   const vault = Vault();
+  // try {
+  //   console.log(await vault.getHealth())
+  // } catch(e) {
+  //   res.json({error: e.toString()});
+  // }
+
   const vaultAuth = await vault.getVaultAuth("webapp");
   const secrets = await vault.getSecrets(vaultAuth.auth.client_token);
   res.json({
