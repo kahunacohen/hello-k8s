@@ -5,6 +5,7 @@
 
 # Delete pods, blocking until they are all terminated.
 
+echo Deleting all k8s resources...
 kubectl delete all --all
 while :
   do
@@ -15,14 +16,19 @@ while :
     fi
     sleep .5
   done
-
+echo uninstalling charts...
 helm uninstall consul
 helm uninstall vault
 
-if ! helm &> /dev/null; then
-  echo Installing helm
-fi
-echo helm installed.
+echo uninstalling consul pvcs...
+kubectl delete pvc -l chart=consul-helm
+echo sleeping...
+sleep 10
+
+# if ! helm &> /dev/null; then
+#   echo Installing helm
+# fi
+# echo helm installed.
 echo "Adding hashicorp helm repo"
 helm repo add hashicorp https://helm.releases.hashicorp.com
 helm repo update
@@ -49,20 +55,27 @@ while :
     sleep 1
   done
 
-kubectl port-forward --address=127.0.0.1 vault-0 8200:8200 &
+#kubectl port-forward --address=127.0.0.1 vault-0 8200:8200 &
+#PORT_FWD_PID=$!
+# echo port forwarding vault in background. Process id: $PORT_FWD_PID
+# echo sleeping...
+# sleep 20
+
+# echo Resetting consul data.
+# kubectl get pods | grep 'consul-' | awk  '{print $1}'
+# pds=$(kubectl get pods | grep 'consul-' | awk  '{print $1}')
+# for i in $pds; do
+#     kubectl exec "$i" -- rm -rf '/consul/data/raft'
+# done;
+# sleep 30
+kubectl port-forward vault-0 8200:8200 &
 PORT_FWD_PID=$!
 echo port forwarding vault in background. Process id: $PORT_FWD_PID
-sleep 10
-
-echo Resetting consul data.
-kubectl get pods | grep 'consul-' | awk  '{print $1}'
-pds=$(kubectl get pods | grep 'consul-' | awk  '{print $1}')
-for i in $pds; do
-    kubectl exec "$i" -- rm -rf '/consul/data/raft'
-done;
+echo sleeping...
 sleep 30
 echo initializing vault server and getting keys
 kubectl exec vault-0 -- vault operator init -key-shares=2 -key-threshold=2 -format=json > cluster-keys.json
+sleep 20
 
 vault_pds=$(kubectl get pods | grep -E 'vault-\d+' | awk  '{print $1}')
 for p in $vault_pds; do
