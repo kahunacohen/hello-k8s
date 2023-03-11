@@ -11,6 +11,3 @@ This is a hello world app demonstating the basics of Kubernetes (k8s):
 
 
 Most of demo is in an express app.
-
-## Install & Run
-1.
